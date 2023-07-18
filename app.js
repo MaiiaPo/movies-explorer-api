@@ -1,17 +1,16 @@
-/* eslint-disable */
-// eslint-disable-next-line import/no-extraneous-dependencies
 const express = require('express');
 const mongoose = require('mongoose');
 
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const router = require('./routes');
 const config = require('./config');
 
-const { errors } = require('celebrate');
 const errorsHandler = require('./middlewares/errors');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('./middlewares/cors');
+const NotFoundError = require('./errors/not-found-err');
 
 mongoose.connect(config.connectDbString);
 

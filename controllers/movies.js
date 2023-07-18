@@ -1,5 +1,4 @@
-/* eslint-disable import/no-unresolved */
-const Movie = require('../models/Movie');
+const Movie = require('../models/movie');
 const BadRequest = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found-err');
 

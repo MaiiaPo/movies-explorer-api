@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
@@ -33,18 +32,17 @@ module.exports.updateUser = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const { name, email, password } = req.body;
-
-  bcrypt.hash(password, 10)
+  bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
-      name,
-      email,
+      name: req.body.name,
+      email: req.body.email,
       password: hash,
     }))
     .then((user) => {
-      // eslint-disable-next-line no-shadow
-      const { name, email } = user;
-      return res.status(201).send({ name, email });
+      res.status(201).send({
+        email: user.email,
+        name: user.name,
+      });
     })
     .catch((error) => {
       if (error.code === 11000) {
