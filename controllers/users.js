@@ -73,7 +73,7 @@ module.exports.login = (req, res, next) => {
         }
         const token = jwt.sign(
           { _id: user._id },
-          config.jwtSecret,
+          config.JWT_SECRET,
           { expiresIn: '7d' },
         );
         return res.send({ token });

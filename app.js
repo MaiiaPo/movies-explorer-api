@@ -13,7 +13,7 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('./middlewares/cors');
 const NotFoundError = require('./errors/not-found-err');
 
-mongoose.connect(config.connectDbString);
+mongoose.connect(config.CONNECT);
 
 const app = express();
 
@@ -31,6 +31,6 @@ app.use(errorLogger);
 app.use(errors());
 app.use(errorsHandler);
 
-app.listen(config.port, () => {
-  console.log(`App listening on port ${config.port}`);
+app.listen(config.PORT, () => {
+  console.log(`App listening on port ${config.PORT}`);
 });
