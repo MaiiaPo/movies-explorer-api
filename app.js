@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const router = require('./routes');
@@ -18,6 +19,8 @@ mongoose.connect(config.CONNECT);
 const app = express();
 
 app.use(bodyParser.json());
+app.use(helmet());
+
 app.use(cors);
 app.use(requestLogger);
 
