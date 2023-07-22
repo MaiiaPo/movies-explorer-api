@@ -6,6 +6,7 @@ const NotFoundError = require('../errors/not-found-err');
 const BadRequest = require('../errors/bad-request');
 const ConflictError = require('../errors/conflict-error');
 const AuthError = require('../errors/auth-error');
+const { ERROR_MSG } = require('../utils/constants');
 
 module.exports.getUser = (req, res, next) => {
   User.find({})
@@ -22,10 +23,10 @@ module.exports.updateUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((error) => {
       if (error.message === 'NotValidId') {
-        return next(new NotFoundError(`Пользователь с id: ${userId} не найден`));
+        return next(new NotFoundError(ERROR_MSG.NOT_FOUND_USER));
       }
       if (error.name === 'ValidationError' || error.name === 'CastError') {
-        return next(new BadRequest('Переданы некорректные данные'));
+        return next(new BadRequest(ERROR_MSG.BADREQUEST));
       }
       return next(error);
     });
@@ -46,11 +47,11 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((error) => {
       if (error.code === 11000) {
-        return next(new ConflictError('Такой пользователь уже существует'));
+        return next(new ConflictError(ERROR_MSG.CONFLICT));
       }
 
       if (error.name === 'ValidationError') {
-        return next(new BadRequest('Переданы некорректные данные'));
+        return next(new BadRequest(ERROR_MSG.BADREQUEST));
       }
       return next(error);
     });
@@ -63,12 +64,12 @@ module.exports.login = (req, res, next) => {
     .select('+password')
     .then((user) => {
       if (!user) {
-        throw new AuthError('Неверные почта или пароль');
+        throw new AuthError(ERROR_MSG.AUTH_ERROR);
       }
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
           return next(
-            new AuthError('Неверные почта или пароль'),
+            new AuthError(ERROR_MSG.AUTH_ERROR),
           );
         }
         const token = jwt.sign(
