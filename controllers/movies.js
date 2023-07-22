@@ -1,6 +1,7 @@
 const Movie = require('../models/movie');
 const BadRequest = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found-err');
+const ForbiddenError = require('../errors/forbidden-error');
 
 module.exports.getMovies = (req, res, next) => {
   Movie.find({ owner: req.user._id })
@@ -25,13 +26,20 @@ module.exports.createMovie = (req, res, next) => {
 
 module.exports.deleteMovie = (req, res, next) => {
   const { movieId } = req.params;
-
-  return Movie.deleteOne({ _id: movieId })
+  Movie.findById(movieId)
+    .orFail(new Error('NotValidId'))
     .then((movie) => {
-      if (movie.deletedCount === 0) {
-        throw new NotFoundError(`Фильм с id: ${movieId} не найден`);
+      if (!movie.owner.equals(req.user._id)) {
+        return next(new ForbiddenError('Нельзя удалить чужую карточку'));
       }
-      return res.send({ message: 'Фильм успешно удален' });
+      return Movie.deleteOne(movie)
+        .then((deletedMovie) => {
+          if (deletedMovie.deletedCount === 0) {
+            throw new NotFoundError(`Фильм с id: ${movieId} не найден`);
+          }
+          return res.send({ message: 'Фильм успешно удален' });
+        })
+        .catch((error) => next(error));
     })
     .catch((error) => {
       if (error.message === 'NotValidId') {
