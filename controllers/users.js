@@ -9,7 +9,7 @@ const AuthError = require('../errors/auth-error');
 const { ERROR_MSG } = require('../utils/constants');
 
 module.exports.getUser = (req, res, next) => {
-  User.find({})
+  User.findById(req.user._id)
     .then((user) => res.send(user))
     .catch((error) => next(error));
 };
